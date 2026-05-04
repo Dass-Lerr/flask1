@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, render_template
 import os, uuid, hashlib
 
 app = Flask(__name__)
@@ -17,6 +17,11 @@ def get_md5(f):
     f.seek(0)
     return h.hexdigest()
 
+
+@app.route('/help', methods=['GET', 'POST'])
+def help():
+    number_lst = [z for z in range(100)]
+    return render_template('help.html', title='Проверка', number_lst=number_lst)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
