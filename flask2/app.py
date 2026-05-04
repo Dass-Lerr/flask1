@@ -9,7 +9,7 @@ os.makedirs(upload, exist_ok=True)
 blocked = {'exe', 'sh', 'php', 'js'}
 
 
-# сначала объявляем функции
+
 def load_json(folder_name, file_name):
     if not os.path.exists(folder_name):
         os.mkdir(folder_name)
@@ -38,7 +38,7 @@ def get_md5(f):
     return h.hexdigest()
 
 
-# теперь загружаем данные (после объявления функций)
+
 files_db = load_json('data', 'files.json')
 
 
@@ -73,7 +73,7 @@ def index():
             'size': os.path.getsize(full)
         })
 
-        # сохраняем после загрузки
+
         save_json('data', 'files.json', files_db)
 
         return render_template('index.html', success='загружено!', files=files_db)
