@@ -1,13 +1,33 @@
-from flask import Flask, request, make_response, render_template
-import os, uuid, hashlib
+from flask import Flask, request, render_template
+import os, uuid, hashlib, json
 
 app = Flask(__name__)
 app.secret_key = 'secret'
-UPLOAD = 'upload'
-os.makedirs(UPLOAD, exist_ok=True)
+upload = 'upload'
+os.makedirs(upload, exist_ok=True)
 
 blocked = {'exe', 'sh', 'php', 'js'}
-files_db = []
+
+
+# сначала объявляем функции
+def load_json(folder_name, file_name):
+    if not os.path.exists(folder_name):
+        os.mkdir(folder_name)
+    full_path = os.path.join(folder_name, file_name)
+    if not os.path.exists(full_path):
+        with open(full_path, "w", encoding="utf-8") as f:
+            json.dump([], f, ensure_ascii=False, indent=2)
+        return []
+    with open(full_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_json(folder_name, file_name, data):
+    if not os.path.exists(folder_name):
+        os.mkdir(folder_name)
+    full_path = os.path.join(folder_name, file_name)
+    with open(full_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def get_md5(f):
@@ -18,32 +38,31 @@ def get_md5(f):
     return h.hexdigest()
 
 
-@app.route('/help', methods=['GET', 'POST'])
-def help():
-    number_lst = [z for z in range(100)]
-    return render_template('help.html', title='Проверка', number_lst=number_lst)
+# теперь загружаем данные (после объявления функций)
+files_db = load_json('data', 'files.json')
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         file = request.files.get('file')
         if not file or file.filename == '':
-            return make_response('<h1>файл не выбран</h1><a href="/">назад</a>')
+            return render_template('index.html', error='файл не выбран', files=files_db)
 
         name = file.filename
         ext = name.rsplit('.', 1)[-1].lower()
         if ext in blocked:
-            return make_response(f'<h1>расширение .{ext} запрещено</h1><a href="/">назад</a>')
+            return render_template('index.html', error=f'расширение .{ext} запрещено', files=files_db)
 
         md5 = get_md5(file)
         for f in files_db:
             if f['md5'] == md5:
-                return make_response('<h1>такой файл уже есть</h1><a href="/">назад</a>')
+                return render_template('index.html', error='такой файл уже есть', files=files_db)
 
         uid = uuid.uuid4().hex
         p1, p2 = uid[:2], uid[2:4]
         rel = os.path.join(p1, p2, f'{uid}.{ext}')
-        full = os.path.join(UPLOAD, rel)
+        full = os.path.join(upload, rel)
         os.makedirs(os.path.dirname(full), exist_ok=True)
         file.save(full)
 
@@ -54,46 +73,12 @@ def index():
             'size': os.path.getsize(full)
         })
 
-        table = ''.join(
-            [f"<tr><td>{f['original']}</td><td>/upload/{f['path']}</td><td>{f['md5']}</td><td>{f['size']} б</td></tr>"
-             for f in files_db])
+        # сохраняем после загрузки
+        save_json('data', 'files.json', files_db)
 
-        html = f'''<!doctype html>
-<html><head><meta charset="utf-8"><title>загрузка</title></head>
-<body style="font-family:sans-serif;max-width:700px;margin:20px auto">
-  <h2>загрузить файл</h2>
-  <h3 style="color:green">загружено!</h3>
-  <form method="post" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <button>отправить</button>
-  </form>
-  <h3>файлы ({len(files_db)})</h3>
-  <table border="1" style="width:100%;border-collapse:collapse">
-    <tr><th>имя</th><th>путь</th><th>md5</th><th>размер</th></tr>
-    {table}
-  </table>
-</body></html>'''
-        return make_response(html)
+        return render_template('index.html', success='загружено!', files=files_db)
 
-    table = ''.join(
-        [f"<tr><td>{f['original']}</td><td>/upload/{f['path']}</td><td>{f['md5']}</td><td>{f['size']} б</td></tr>" for f
-         in files_db]) if files_db else '<tr><td colspan="4">пусто</td></tr>'
-
-    html = f'''<!doctype html>
-<html><head><meta charset="utf-8"><title>загрузка</title></head>
-<body style="font-family:sans-serif;max-width:700px;margin:20px auto">
-  <h2>загрузить файл</h2>
-  <form method="post" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <button>отправить</button>
-  </form>
-  <h3>файлы ({len(files_db)})</h3>
-  <table border="1" style="width:100%;border-collapse:collapse">
-    <tr><th>имя</th><th>путь</th><th>md5</th><th>размер</th></tr>
-    {table}
-  </table>
-</body></html>'''
-    return make_response(html)
+    return render_template('index.html', files=files_db)
 
 
 if __name__ == '__main__':

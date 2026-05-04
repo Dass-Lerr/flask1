@@ -1,10 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8">
+    <title>загрузка файлов</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 20px auto; }
+        .msg { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; }
+        th { background: #f1f1f1; }
+    </style>
 </head>
 <body>
+    <h2>загрузить файл</h2>
+
+    {% if success %}
+        <div class="msg success">{{ success }}</div>
+    {% endif %}
+
+    {% if error %}
+        <div class="msg error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">отправить</button>
+    </form>
+
+    <h3>файлы ({{ files|length }})</h3>
+    <table>
+        <tr>
+            <th>имя</th>
+            <th>путь</th>
+            <th>md5</th>
+            <th>размер</th>
+        </tr>
+        {% for f in files %}
+        <tr>
+            <td>{{ f.original }}</td>
+            <td>/upload/{{ f.path }}</td>
+            <td>{{ f.md5 }}</td>
+            <td>{{ f.size }} б</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">пусто</td>
+        </tr>
+        {% endfor %}
+    </table>
 
 </body>
 </html>
