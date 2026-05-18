@@ -9,7 +9,7 @@ from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret-key-12345'
+app.config['SECRET_KEY'] = os.urandom(256)
 app.config['JSON_FILE'] = 'users.json'
 
 
