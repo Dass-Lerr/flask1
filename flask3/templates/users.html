@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список пользователей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .nav {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            color: #4CAF50;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('create_user') }}">➕ Создать</a>
+            <a href="{{ url_for('logout') }}">🚪 Выйти</a>
+        </div>
+
+        <h1>👥 Пользователи системы</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Имя пользователя</th>
+                    <th>Дата регистрации</th>
+                    <th>Последний вход</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for username, data in users.items() %}
+                <tr>
+                    <td><strong>{{ username }}</strong></td>
+                    <td>{{ data.created_at }}</td>
+                    <td>{{ data.last_login if data.last_login else 'Не входил' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

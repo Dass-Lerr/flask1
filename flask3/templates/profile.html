@@ -1,0 +1,15 @@
+<!-- templates/profile.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Профиль</title>
+</head>
+<body>
+    <h1>Профиль пользователя</h1>
+    <p>Имя: {{ username }}</p>
+    <p>Роль: {{ role }}</p>
+    <p>Создан: {{ created_at }}</p>
+    <p>Последний вход: {{ last_login }}</p>
+    <a href="{{ url_for('logout') }}">Выйти</a>
+</body>
+</html>
