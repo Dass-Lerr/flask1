@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Sudoku Solver{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+{% if session.user_id %}
+<nav>
+  <a class="nav-brand" href="{{ url_for('index') }}">Sudoku <em>Solver</em></a>
+  <div class="nav-links">
+    <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>Решить</a>
+    <a href="{{ url_for('history_page') }}" {% if request.endpoint == 'history_page' %}class="active"{% endif %}>История</a>
+    <a href="{{ url_for('profile') }}" {% if request.endpoint == 'profile' %}class="active"{% endif %}>Профиль</a>
+    {% if user is defined and user and user.is_admin %}
+    <a href="{{ url_for('admin_users') }}" {% if request.endpoint == 'admin_users' %}class="active"{% endif %}>Пользователи</a>
+    {% endif %}
+    <a href="{{ url_for('logout') }}" class="nav-logout">Выйти</a>
+  </div>
+</nav>
+{% endif %}
+
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flashes">
+      {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer>made with opencv · keras · flask</footer>
+
+</body>
+</html>

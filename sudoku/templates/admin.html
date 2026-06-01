@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Пользователи — Admin{% endblock %}
+
+{% block content %}
+<div class="anim-down" style="margin-bottom:2rem;">
+  <p class="page-eyebrow">Администрирование</p>
+  <h1 class="page-title">Пользо<em>ватели</em></h1>
+</div>
+
+<div style="display:grid; grid-template-columns:320px 1fr; gap:1.5rem; align-items:start;">
+
+  <div class="card anim-up">
+    <h2 class="section-title">Новый пользователь</h2>
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">
+        {{ form.username.label }}
+        {{ form.username(placeholder="например: john_doe") }}
+        {% for e in form.username.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="field">
+        {{ form.password.label }}
+        {{ form.password(placeholder="••••••••") }}
+        {% for e in form.password.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="field">
+        {{ form.password_confirm.label }}
+        {{ form.password_confirm(placeholder="••••••••") }}
+        {% for e in form.password_confirm.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="checkbox-row">
+        {{ form.is_admin() }}
+        {{ form.is_admin.label }}
+      </div>
+      {{ form.submit(class="btn btn-full") }}
+    </form>
+  </div>
+
+  <div class="card anim-up" style="animation-delay:.1s">
+    <h2 class="section-title">Все пользователи — {{ users|length }}</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Логин</th><th>Роль</th><th>Регистрация</th><th>Последний вход</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td><strong>{{ u.username }}</strong></td>
+            <td>
+              {% if u.is_admin %}<span class="role-badge role-admin">admin</span>
+              {% else %}<span class="role-badge role-user">user</span>{% endif %}
+            </td>
+            <td class="text-muted">{{ u.registered_at }}</td>
+            <td class="text-muted">{{ u.last_login_at or '—' }}</td>
+            <td>
+              {% if u.username == me.username or u.username == 'admin' or (u.is_admin and me.username != 'admin') %}
+                <span style="color:var(--line); font-size:.75rem;">—</span>
+              {% else %}
+              <form method="POST" action="{{ url_for('delete_user', username=u.username) }}" onsubmit="return confirm('Удалить {{ u.username }}?')">
+                {{ form.hidden_tag() }}
+                <button type="submit" class="btn btn-danger btn-sm">✕</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
