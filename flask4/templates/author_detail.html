@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ author.username }}</h2>
+
+{% if author.first_name or author.last_name %}
+    <p>{{ author.first_name }} {{ author.last_name }}</p>
+{% endif %}
+
+<p>На сайте с: {{ author.created.strftime('%d.%m.%Y') }}</p>
+
+<hr>
+
+<h3>Новости автора</h3>
+
+{% for news in news_list %}
+<div>
+    <h4>
+        <a href="{{ url_for('news_detail', id=news.id) }}">
+            {{ news.title }}
+        </a>
+    </h4>
+    <p>{{ news.content[:200] }}{% if news.content|length > 200 %}...{% endif %}</p>
+    <small>
+        Категория:
+        <a href="{{ url_for('index', category=news.category.id) }}">
+            {{ news.category.name }}
+        </a>
+        |
+        {{ news.created.strftime('%d.%m.%Y %H:%M') }}
+    </small>
+</div>
+<hr>
+{% endfor %}
+
+{% endblock %}

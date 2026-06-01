@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Последние новости</h1>
+
+<div class="mb-3">
+    <strong>Фильтры: </strong>
+    {% if current_category or current_tag or current_author %}
+        <a href="{{ url_for('index') }}" class="btn btn-sm btn-secondary">Сбросить</a>
+    {% endif %}
+</div>
+
+{% for news in news_list %}
+<div>
+    <h3>
+        <a href="{{ url_for('news_detail', id=news.id) }}">
+            {{ news.title }}
+        </a>
+    </h3>
+    <p>{{ news.content[:200] }}{% if news.content|length > 200 %}...{% endif %}</p>
+    <small>
+        Автор:
+        <a href="{{ url_for('author_detail', id=news.author.id) }}">
+            {{ news.author.username }}
+        </a>
+        |
+        Категория:
+        <a href="{{ url_for('index', category=news.category.id) }}">
+            {{ news.category.name }}
+        </a>
+        |
+        {{ news.created.strftime('%d.%m.%Y %H:%M') }}
+    </small>
+    <p>
+        {% for tag in news.tags %}
+            <a href="{{ url_for('index', tag=tag.id) }}">
+                <span class="badge bg-secondary">{{ tag.name }}</span>
+            </a>
+        {% endfor %}
+    </p>
+</div>
+<hr>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Авторы</h2>
+
+<div class="list-group">
+    {% for author in authors %}
+    <a href="{{ url_for('author_detail', id=author.id) }}" class="list-group-item list-group-item-action">
+        {{ author.username }}
+        {% if author.first_name or author.last_name %}
+            ({{ author.first_name }} {{ author.last_name }})
+        {% endif %}
+    </a>
+    {% endfor %}
+</div>
+
+{% endblock %}

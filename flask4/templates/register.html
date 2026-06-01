@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Регистрация</h2>
+
+<form method="POST">
+
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.username.label }}
+        <br>
+        {{ form.username(class="form-control") }}
+    </p>
+
+    <p>
+        {{ form.first_name.label }}
+        <br>
+        {{ form.first_name(class="form-control") }}
+    </p>
+
+    <p>
+        {{ form.last_name.label }}
+        <br>
+        {{ form.last_name(class="form-control") }}
+    </p>
+
+    <p>
+        {{ form.email.label }}
+        <br>
+        {{ form.email(class="form-control") }}
+    </p>
+
+    <p>
+        {{ form.password.label }}
+        <br>
+        {{ form.password(class="form-control") }}
+    </p>
+
+    <p>
+        {{ form.confirm_password.label }}
+        <br>
+        {{ form.confirm_password(class="form-control") }}
+    </p>
+
+    <p>
+        {{ form.submit(class="btn btn-success") }}
+    </p>
+
+</form>
+
+{% endblock %}

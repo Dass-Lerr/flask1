@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h1 class="card-title">
+                        {{ post.title }}
+                        {% if post.is_private %}
+                            <span class="private-badge">🔒 Приватный</span>
+                        {% endif %}
+                    </h1>
+                    <div class="text-muted mb-4">
+                        <span>👤 {% if post.author.is_deleted %}Удалённый пользователь{% else %}{{ post.author.username }}{% endif %}</span> |
+                        <span>📅 {{ post.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                        {% if post.updated_at != post.created_at %}
+                            | <span>✏️ Обновлён: {{ post.updated_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-text" style="white-space: pre-wrap; line-height: 1.8;">
+                        {{ post.content }}
+                    </div>
+
+                    <hr>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">← На главную</a>
+                        {% if current_user.is_authenticated and not post.author.is_deleted and (post.user_id == current_user.id or current_user.is_admin()) %}
+                            <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-warning">✏️ Редактировать</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
